@@ -68,7 +68,7 @@ function App() {
                   role="presentation"
                   aria-hidden="true"
                 >
-                  <use href="/icons.svg#github-icon"></use>
+                  <use href="./icons.svg#github-icon"></use>
                 </svg>
                 GitHub
               </a>
@@ -80,7 +80,7 @@ function App() {
                   role="presentation"
                   aria-hidden="true"
                 >
-                  <use href="/icons.svg#discord-icon"></use>
+                  <use href="./icons.svg#discord-icon"></use>
                 </svg>
                 Discord
               </a>
@@ -92,7 +92,7 @@ function App() {
                   role="presentation"
                   aria-hidden="true"
                 >
-                  <use href="/icons.svg#x-icon"></use>
+                  <use href="./icons.svg#x-icon"></use>
                 </svg>
                 X.com
               </a>
@@ -104,7 +104,7 @@ function App() {
                   role="presentation"
                   aria-hidden="true"
                 >
-                  <use href="/icons.svg#bluesky-icon"></use>
+                  <use href="./icons.svg#bluesky-icon"></use>
                 </svg>
                 Bluesky
               </a>
