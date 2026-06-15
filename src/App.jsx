@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   function change_bg() {
     darkMode ? setDarkMode(false) : setDarkMode(true);
   }
@@ -15,7 +15,7 @@ export default function App() {
           className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 hover:cursor-pointer transition focus:ring-1 focus:ring-blue-700 outline-none ease-in-out duration-200 "
           onClick={change_bg}
         >
-          Dark mode
+          {darkMode ? "Light Mode" : "Dark Mode"}
         </button>
       </div>
     </div>
