@@ -4,10 +4,12 @@
 @import "tailwindcss";
 
 @theme {
-    /* Font */
     --font-roboto: Roboto, "sans-serif";
     --font-roboto-serif: Roboto-Serif, "sans-serif";
-
-    /* Colors */
     --color-primary-green: #1B6D33;
+}
+
+::selection {
+    background-color: var(--color-primary-green);
+    color: white;
 }
