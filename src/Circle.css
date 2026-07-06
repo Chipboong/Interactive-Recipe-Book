@@ -1,0 +1,9 @@
+.outside__circle {
+    background-image: radial-gradient(#FFA10A 5%, #FFBB00 35%, #EE9300 81%);
+
+    width: 500px;
+    height: 500px;
+    border-radius: 100%;
+    overflow: hidden;
+    isolation: isolate;
+}
