@@ -1,29 +1,54 @@
 import { useState } from "react";
 import { NavLink } from "react-router";
+
+const getDeskLink = ({ isActive }) => ({
+  fontWeight: isActive ? '700' : '500',
+  color: isActive ? '#1B6D33' : 'inherit',
+  borderBottom: isActive ? '2px solid #1B6D33' : '2px solid rgba(0, 128, 0, 0)',
+  // paddingBottom: '1px',
+  transition: 'border-color 0.2s ease, color 0.2s ease',
+  textDecoration: 'none',
+})
+
+const getDrawerLink = ({ isActive }) => ({
+  backgroundColor: isActive ? '#f0fdf4' : 'transparent',
+  color: isActive ? '#1B6D33' : 'inherit',
+  fontWeight: isActive ? '600' : '400',
+  transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+})
+
+
 export default function Navbar() {
   const [navOpen, setNavOpen] = useState(false);
+
   return (
     <>
       <nav className="flex items-center justify-between p-4 px-10 bg-white border-b border-gray-200">
+
         <div className="flex items-center">
           <NavLink
             to={"/"}
-            className="text-4xl font-roboto-serif font-bold text-primary-green lg:w-72"
+            className="font-roboto-serif font-bold text-primary-green lg:w-72"
+            style={{ fontSize: 'clamp(1.4rem, 1rem + 1.5vw, 2.25rem)' }}
           >
-            PlateMate.
+            PlateMate
           </NavLink>
         </div>
+
+
         <div className="lg:flex hidden  justify-center items-center w-full font-roboto space-x-6 text-gray-700 font-medium">
-          <NavLink to={"/"} className="hover:text-green-800 font-bold">
+          <NavLink to={"/"} style={getDeskLink} className="hover:text-green-800">
             Home
           </NavLink>
-          <NavLink to="/about" className="hover:text-green-800">
+          <NavLink to="/about" style={getDeskLink} className="hover:text-green-800">
             About
           </NavLink>
-          <NavLink to="/recipe" className="hover:text-green-800">
+          <NavLink to="/recipes" style={getDeskLink} className="hover:text-green-800">
             Recipes
           </NavLink>
         </div>
+
+
         <div className="lg:flex hidden items-center lg:space-x-4">
           <div className="relative">
             <input
@@ -44,23 +69,29 @@ export default function Navbar() {
             </svg>
           </div>
 
+
           <button className="bg-orange-600 text-white px-6 py-2 md:hidden rounded-full font-semibold hover:bg-orange-700">
             Add Recipe
           </button>
         </div>
+
         <div className="lg:hidden flex">
           <button
             className="w-7 h-auto"
+            style={{ cursor: 'pointer' }}
             onClick={() => {
               setNavOpen(navOpen ? false : true);
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-              <path d="M96 160C96 142.3 110.3 128 128 128L512 128C529.7 128 544 142.3 544 160C544 177.7 529.7 192 512 192L128 192C110.3 192 96 177.7 96 160zM96 320C96 302.3 110.3 288 128 288L512 288C529.7 288 544 302.3 544 320C544 337.7 529.7 352 512 352L128 352C110.3 352 96 337.7 96 320zM544 480C544 497.7 529.7 512 512 512L128 512C110.3 512 96 497.7 96 480C96 462.3 110.3 448 128 448L512 448C529.7 448 544 462.3 544 480z" />
+            <svg viewBox="0 0 100 80" width="25" height="25" fill="currentColor">
+              <rect width="100" height="6" rx="6"></rect>
+              <rect y="25" width="100" height="6" rx="6"></rect>
+              <rect y="50" width="100" height="6" rx="6"></rect>
             </svg>
           </button>
         </div>
       </nav>
+
       <div
         className={`
           fixed top-0 left-0 z-50 h-screen w-64
@@ -71,30 +102,35 @@ export default function Navbar() {
         `}
       >
         <div className="flex items-center justify-between border-b p-5">
-          <h2 className="text-2xl font-bold text-primary-green">PlateMate.</h2>
-      
-          <button onClick={() => setNavOpen(false)} className="text-2xl">
+          <h2 className="font-roboto-serif text-2xl text-primary-green">PlateMate</h2>
+          <button onClick={() => setNavOpen(false)} className="text-2xl" style={{ cursor: 'pointer' }}>
             ✕
           </button>
         </div>
-      
-        <nav className="flex flex-col p-5 space-y-5">
+
+        <nav className="flex flex-col p-5 space-y-2">
           <NavLink
             to="/"
-            className="rounded-md px-3 py-2 font-semibold hover:bg-green-100 hover:text-green-800"
+            onClick={() => setNavOpen(false)}
+            style={getDrawerLink}
+            className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
           >
             Home
           </NavLink>
-      
+
           <NavLink
             to="/about"
+            onClick={() => setNavOpen(false)}
+            style={getDrawerLink}
             className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
           >
             About
           </NavLink>
-      
+
           <NavLink
-            to="/recipe"
+            to="/recipes"
+            onClick={() => setNavOpen(false)}
+            style={getDrawerLink}
             className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
           >
             Recipes

@@ -13,3 +13,9 @@
     background-color: var(--color-primary-green);
     color: white;
 }
+
+/* Typography size:
+    Body text: clamp(0.8rem, 1.05vw, 0.95rem)
+    Section heading: clamp(1.5rem, 3.5vw, 2rem)
+    Logo (navbar): clamp(1.3rem, 1rem + 1.5vw, 2.25rem) 
+*/

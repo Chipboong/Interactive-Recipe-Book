@@ -3,6 +3,7 @@ import App from "./App";
 import Home from "@/routes/Home.jsx";
 import About from "@/routes/About.jsx";
 import NotFound from "@/routes/NotFound.jsx";
+import Recipes from "@/routes/Recipes";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
       {
         path: "/about",
         Component: About,
+      },
+      {
+        path: "/recipes",
+        Component: Recipes,
       },
       {
         path: "/*",
