@@ -66,6 +66,8 @@ function HeroParallax() {
             src={heroImage}
             alt={CONFIG.image.alt}
             className='h-full w-full object-cover select-none'
+            loading='eager'
+            fetchPriority='high'
             style={{ objectPosition: CONFIG.image.objectPosition }}
           />
         </motion.div>

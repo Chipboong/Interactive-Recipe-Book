@@ -6,9 +6,10 @@ export default function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 text-center md:flex-row md:items-center md:justify-between md:text-left">
         <Link
           to="/"
-          className="text-3xl font-roboto-serif font-bold text-primary-green"
+          className=" font-roboto-serif font-bold text-primary-green"
+          style={{ fontSize: 'clamp(1.3rem, 1rem + 1.5vw, 1.875rem)' }}
         >
-          PlateMate.
+          PlateMate
         </Link>
 
 
