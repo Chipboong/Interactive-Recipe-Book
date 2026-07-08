@@ -11,7 +11,6 @@ function Button({ to, onClick, children, variant = 'primary', fullWidth = false 
         'inline-block rounded-full font-roboto font-semibold text-sm select-none',
         'px-5 py-2 sm:px-6 sm:py-2.5',          
         'transition-colors duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-offset-2',
         fullWidth ? 'w-full text-center' : 'w-auto',  
         styles[variant],
     ].join(' ')
