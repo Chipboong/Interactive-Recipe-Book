@@ -1,26 +1,6 @@
 export default function Card() {
     return (
-//         <div className="w-[220px] min-h-[260px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
-//   {/* Image Container */}
-//   <div className="h-36 w-full bg-gray-100 shrink-0">
-//     <img 
-//       src="/favicon.svg" 
-//       alt="Recipe" 
-//       className="w-full h-full object-cover"
-//     />
-//   </div>
-
-//   {/* Content Container */}
-//   <div className="p-4 font-roboto flex flex-col flex-grow">
-//     <h1 className="text-lg font-bold text-gray-900 line-clamp-1">
-//       Name
-//     </h1>
-//     <p className="text-sm text-gray-600 mt-1 line-clamp-3">
-//       Description
-//     </p>
-//   </div>
-// </div>
-<div className="w-full bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 flex flex-col font-sans group">
+<div className="w-full bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md border border-gray-100 flex flex-col font-sans group">
       
       {/* --- Image Section --- */}
       <div className="relative h-56 w-full">

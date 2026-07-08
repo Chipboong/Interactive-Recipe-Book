@@ -23,7 +23,7 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <NavLink
-              to="/recipe"
+              to="/recipes"
               className="bg-primary-green hover:bg-green-700 transition text-white px-8 py-3 rounded-full text-center font-semibold"
             >
               Browse Recipes
