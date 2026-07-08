@@ -1,9 +1,13 @@
-import PageHeader from "@/components/recipes/PageHeader";
+import PageHeader from '@/components/recipes/PageHeader'
+import FilterBar from '@/components/recipes/FilterBar'
+import RecipeGrid from '@/components/recipes/RecipeGrid'
 
 function Recipes() {
-    return(
+    return (
         <main aria-label="The Recipe Page">
-            <PageHeader/>
+            <PageHeader />
+            <FilterBar />
+            <RecipeGrid />
         </main>
     )
 }

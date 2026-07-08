@@ -15,7 +15,7 @@ function AboutCTA() {
           The kitchen is waiting.
         </h2>
 
-        <Button to="/recipe">Browse Recipes</Button>
+        <Button to="/recipes">Browse Recipes</Button>
       </div>
     </section>
   )
