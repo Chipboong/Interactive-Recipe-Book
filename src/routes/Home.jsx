@@ -1,17 +1,14 @@
 import { NavLink } from "react-router";
 import Hero from "@/assets/Hero.jpg";
-
+import "@/Circle.css"
 export default function Home() {
   return (
     <div
       className="relative min-h-[calc(100vh-72px)] bg-cover bg-center"
       style={{ backgroundImage: `url(${Hero})` }}
     >
-      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/50" />
-
-      {/* Content */}
-      <div className="relative z-10 flex min-h-[calc(100vh-72px)] items-center justify-center lg:justify-start px-6 md:px-12 lg:px-20">
+      <div className="relative z-10 flex min-h-[calc(100vh-72px)] items-center justify-center lg:justify-start px-6 md:px-12 lg:px-20 animation-fade-up">
         <div className="flex flex-col gap-6 max-w-xl text-center lg:text-left items-center lg:items-start text-white">
           <h1 className="text-xl md:text-2xl lg:text-4xl font-bold leading-tight">
             <span className="text-primary-green text-2xl md:text-4xl lg:text-6xl">PlateMate</span>
