@@ -15,11 +15,7 @@ function Recipes() {
     
     {/* THE FIX: Replaced manual breakpoints with an auto-fit grid */}
     <div className="px-4 pb-12 sm:px-6 lg:px-8 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
+      {Array.from({length:5}).map((_, index) => <Card key={index}/> )}
     </div>
     
   </main>
