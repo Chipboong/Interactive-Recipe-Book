@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import Hero from "@/assets/Hero.jpg";
+import Hero from "@/assets/hero.jpg";
 import "@/Circle.css"
 export default function Home() {
   return (
