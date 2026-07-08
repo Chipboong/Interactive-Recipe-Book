@@ -1,65 +1,45 @@
 import { NavLink } from "react-router";
-import { useRef } from "react";
-import "../Circle.css";
-import { useEffect } from "react";
+import Hero from "@/assets/Hero.jpg";
+
 export default function Home() {
-  const canvasRef = useRef(null);
-  function canvasImage() {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const gradient = ctx.createRadialGradient(
-      300,
-      250,
-      0, // Inner circle (center, radius 0)
-      300,
-      250,
-      200, // Outer circle (center, radius 200)
-    );
-
-    // Add color stops
-    gradient.addColorStop(0.05, "#FFA10A"); // 5%
-    gradient.addColorStop(0.35, "#FFBB00"); // 35%
-    gradient.addColorStop(0.81, "#EE9300"); // 81%
-
-    ctx.beginPath();
-    ctx.arc(250, 250, 200, 0, 2 * Math.PI);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    ctx.strokeStyle = "transparent";
-    ctx.stroke();
-
-    console.log(ctx);
-  }
-  useEffect(() => {
-    canvasImage();
-  }, [canvasRef]);
   return (
-    <div>
-      <div className="h-[calc(100vh-72.8px)]  justify-center lg:justify-normal items-center flex">
-        <div className="flex flex-col  px-12 gap-4">
-          <h1 className="text-4xl font-semibold">
-            <span className="text-primary-green font-roboto-serif font-bold text-5xl">
-              PlateMate
-            </span>
-            ,<br></br> Where Plates is your MATE!
+    <div
+      className="relative min-h-[calc(100vh-72px)] bg-cover bg-center"
+      style={{ backgroundImage: `url(${Hero})` }}
+    >
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      {/* Content */}
+      <div className="relative z-10 flex min-h-[calc(100vh-72px)] items-center justify-center lg:justify-start px-6 md:px-12 lg:px-20">
+        <div className="flex flex-col gap-6 max-w-xl text-center lg:text-left items-center lg:items-start text-white">
+          <h1 className="text-xl md:text-2xl lg:text-4xl font-bold leading-tight">
+            <span className="text-primary-green text-2xl md:text-4xl lg:text-6xl">PlateMate</span>
+            <br />
+            Your Perfect Recipe Mate.
           </h1>
 
-          <div className="flex gap-12">
+          <p className="text-lg text-gray-200">
+            Cook smarter, eat better, and share your favorite recipes with food
+            lovers everywhere.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <NavLink
-              className="bg-primary-green text-white px-5 py-2 rounded-4xl font-semibold"
-              to={"/recipe"}
+              to="/recipe"
+              className="bg-primary-green hover:bg-green-700 transition text-white px-8 py-3 rounded-full text-center font-semibold"
             >
               Browse Recipes
             </NavLink>
+
             <NavLink
-              className=" font-semibold border-gray-500 border-3 text px-5 py-2 bg-white rounded-4xl"
-              to={"/add"}
+              to="/add"
+              className="bg-white/10 backdrop-blur-sm border border-white text-white hover:bg-white hover:text-black transition px-8 py-3 rounded-full text-center font-semibold"
             >
-              Add Recipes
+              Add Recipe
             </NavLink>
           </div>
         </div>
-        <div></div>
       </div>
     </div>
   );
