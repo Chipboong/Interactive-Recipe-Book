@@ -42,18 +42,8 @@ export default function AddRecipe() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
-        // 2. Calculate new dimensions (Max width of 800px to save space)
-        const MAX_WIDTH = 800;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > MAX_WIDTH) {
-          height = Math.round((height * MAX_WIDTH) / width);
-          width = MAX_WIDTH;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = 800;
+        canvas.height = 800;
 
         // 3. Draw the resized image onto the canvas
         ctx.drawImage(img, 0, 0, width, height);

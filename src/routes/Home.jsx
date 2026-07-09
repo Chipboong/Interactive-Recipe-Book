@@ -47,9 +47,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-          </div>
-        </div>
-      </div>
       <section className="px-16 py-4">
         <h2 className="text-4xl font-bold py-8">Featured Recipes</h2>
         <div className="flex justify-around py-4 gap-12 ">
