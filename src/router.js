@@ -5,6 +5,7 @@ import About from "@/routes/About.jsx";
 import NotFound from "@/routes/NotFound.jsx";
 import Recipes from "@/routes/Recipes";
 import RecipeDetail from "@/routes/RecipeDetail.jsx";
+import AddRecipe from "@/routes/AddRecipe.jsx";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "recipes/:id",
         Component: RecipeDetail,
+      },
+      {
+        path: "/add-recipe",
+        Component: AddRecipe,
       },
       {
         path: "/*",
