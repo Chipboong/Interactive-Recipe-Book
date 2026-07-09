@@ -26,6 +26,7 @@ function RecipeCard({recipe, isFavorited = false, onFavoriteToggle}) {
 
     function handleFavoriteClick(e) {
         e.stopPropagation()
+        e.preventDefault()
         onFavoriteToggle?.(id)
     }
 

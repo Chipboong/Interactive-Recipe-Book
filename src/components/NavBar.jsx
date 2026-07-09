@@ -40,11 +40,11 @@ export default function Navbar() {
           <NavLink to={"/"} style={getDeskLink} className="hover:text-green-800">
             Home
           </NavLink>
-          <NavLink to="/about" style={getDeskLink} className="hover:text-green-800">
-            About
-          </NavLink>
           <NavLink to="/recipes" style={getDeskLink} className="hover:text-green-800">
             Recipes
+          </NavLink>
+          <NavLink to="/about" style={getDeskLink} className="hover:text-green-800">
+            About
           </NavLink>
         </div>
 
@@ -119,21 +119,21 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/about"
-            onClick={() => setNavOpen(false)}
-            style={getDrawerLink}
-            className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
-          >
-            About
-          </NavLink>
-
-          <NavLink
             to="/recipes"
             onClick={() => setNavOpen(false)}
             style={getDrawerLink}
             className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
           >
             Recipes
+          </NavLink>
+
+          <NavLink
+            to="/about"
+            onClick={() => setNavOpen(false)}
+            style={getDrawerLink}
+            className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
+          >
+            About
           </NavLink>
         </nav>
       </div>

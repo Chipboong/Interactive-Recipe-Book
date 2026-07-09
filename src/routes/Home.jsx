@@ -29,20 +29,23 @@ export default function Home() {
               food lovers everywhere.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <NavLink
-                to="/recipes"
-                className="bg-primary-green hover:bg-green-700 transition text-white px-8 py-3 rounded-full text-center font-semibold"
-              >
-                Browse Recipes
-              </NavLink>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                            <NavLink
+                                to="/recipes"
+                                className="bg-primary-green hover:bg-green-700 transition text-white px-8 py-3 rounded-full text-center font-semibold"
+                            >
+                                Browse Recipes
+                            </NavLink>
 
-              <NavLink
-                to="/add"
-                className="bg-white/10 backdrop-blur-sm border border-white text-white hover:bg-white hover:text-black transition px-8 py-3 rounded-full text-center font-semibold"
-              >
-                Add Recipe
-              </NavLink>
+                            <NavLink
+                                to="/add-recipe"
+                                className="bg-white/10 backdrop-blur-sm border border-white text-white hover:bg-white hover:text-black transition px-8 py-3 rounded-full text-center font-semibold"
+                            >
+                                Add Recipe
+                            </NavLink>
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
         </div>

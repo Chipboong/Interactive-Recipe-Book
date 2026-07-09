@@ -2,7 +2,7 @@ function PageHeader() {
     return(
         <section className="w-full px-6 sm:px-10 md:px-28 lg:px-40 pt-4 pb-6 md:pb-9 lg:pb-12">
             <h2
-                className="font-roboto-serif text-primary-green mb-5 mt-10"
+                className="font-roboto-serif text-primary-green font-bold mb-5 mt-10"
                 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', letterSpacing: '-0.02em' }}
             >
                 Discover Recipes that Interest You
