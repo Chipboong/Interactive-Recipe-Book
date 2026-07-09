@@ -1,5 +1,6 @@
 import {useRecipes} from '@/context/RecipeContext'
 import { createContext } from 'react'
+import {Link} from "react-router"
 
 import RecipeCard from './RecipeCard'
 
@@ -25,10 +26,12 @@ function RecipeGrid() {
             >
                 {filteredRecipes.map((recipe) => (
                     <li key={recipe.id}>
+                        <Link to={`/recipes/${recipe.id}`}>
                         <RecipeCard recipe={recipe} 
                                     isFavorited={favorites.includes(recipe.id)}
                                     onFavoriteToggle={toggleFavorite}
                         />
+                        </Link>
                     </li>
                 ))}
             </ol>
