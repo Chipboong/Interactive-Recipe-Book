@@ -1,18 +1,17 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router';
-// TODO: Update this import path to point to your actual context file
-import { useRecipes } from '../context/RecipeContext'; 
+import { useRecipes } from '@/context/RecipeContext'; 
 
 export default function AddRecipe() {
   const navigate = useNavigate();
-  
-  // 1. Pull the addRecipe function from your Context
   const { addRecipe } = useRecipes();
   
-  // 2. Form state (using 'image' to match your data format)
+  // Added an "isCompressing" state to show a loading indicator during compression
+  const [isCompressing, setIsCompressing] = useState(false);
+  
   const [formData, setFormData] = useState({
     title: '',
-    image: '', 
+    image: '', // This will now hold our compressed Base64 string
     description: '',
     category: 'Main Dishes',
     prepTime: '',
@@ -21,150 +20,152 @@ export default function AddRecipe() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // --- THE COMPRESSION MAGIC ---
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsCompressing(true);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      
+      img.onload = () => {
+        // 1. Create a hidden canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 2. Calculate new dimensions (Max width of 800px to save space)
+        const MAX_WIDTH = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // 3. Draw the resized image onto the canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // 4. Export as a compressed JPEG Base64 string (0.7 = 70% quality)
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+        // 5. Save to state and turn off loading
+        setFormData((prev) => ({ ...prev, image: compressedBase64 }));
+        setIsCompressing(false);
+      };
+    };
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // 3. Format the data to exactly match your Recipe Detail structure
+    // Ensure they uploaded an image
+    if (!formData.image) {
+      alert("Please upload an image first!");
+      return;
+    }
+
     const newRecipe = {
-      id: Date.now().toString(), // Generate a unique ID
+      id: Date.now().toString(),
       title: formData.title,
       image: formData.image,
       description: formData.description,
       category: formData.category,
       prepTime: formData.prepTime,
-      // Convert the comma-separated string into a clean array
       keyIngredients: formData.ingredients
         .split(',')
         .map((item) => item.trim())
-        .filter((item) => item !== ''), // Drop any accidental empty spaces
+        .filter((item) => item !== ''), 
     };
 
-    // 4. Pass the beautifully formatted object to your context
     addRecipe(newRecipe);
-    
-    // 5. Navigate back to the recipes list
     navigate('/recipes');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans py-8 px-4 sm:px-6 lg:px-8 pb-20">
       
-      {/* Top Bar with Back Button */}
       <div className="max-w-3xl mx-auto mb-6 flex items-center">
         <button 
-          onClick={() => navigate('/recipes')}
+          onClick={() => navigate(-1)}
           type="button"
-          aria-label="Go back"
-          className="bg-white hover:bg-gray-100 p-2.5 rounded-full shadow-sm transition-transform active:scale-95 border border-gray-200"
+          className="bg-white hover:bg-gray-100 p-2.5 rounded-full shadow-sm border border-gray-200"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-800">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </button>
         <h1 className="text-2xl font-bold text-gray-900 ml-4">Create New Recipe</h1>
       </div>
 
-      {/* The Form Container */}
       <main className="max-w-3xl mx-auto bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 sm:p-10">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           
           {/* Title Input */}
           <div>
-            <label htmlFor="title" className="block text-sm font-bold text-gray-700 mb-2">Recipe Title</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="e.g., Herb-Crusted Lemon Chicken"
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#236b32] focus:border-transparent transition-all"
-            />
+            <label className="block text-sm font-bold text-gray-700 mb-2">Recipe Title</label>
+            <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]" />
           </div>
 
-          {/* Grid for Image URL & Prep Time */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="image" className="block text-sm font-bold text-gray-700 mb-2">Image URL</label>
+          {/* Grid for Image Upload & Prep Time */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            
+            {/* The New Image Uploader */}
+            <div className="flex flex-col gap-3">
+              <label className="block text-sm font-bold text-gray-700">Upload Image</label>
               <input
-                type="url"
-                id="image"
-                name="image" // Updated to 'image'
-                value={formData.image} // Updated to 'image'
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-                required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#236b32] focus:border-transparent transition-all"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-[#236b32] hover:file:bg-green-100 transition-colors"
               />
+              
+              {/* Status or Preview */}
+              {isCompressing ? (
+                <div className="text-sm text-blue-600 font-medium animate-pulse">Compressing image...</div>
+              ) : formData.image ? (
+                <img src={formData.image} alt="Preview" className="w-full h-32 object-cover rounded-xl border border-gray-200" />
+              ) : null}
             </div>
             
             <div>
-              <label htmlFor="prepTime" className="block text-sm font-bold text-gray-700 mb-2">Prep Time</label>
-              <input
-                type="text"
-                id="prepTime"
-                name="prepTime"
-                value={formData.prepTime}
-                onChange={handleChange}
-                placeholder="e.g., 45 min"
-                required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#236b32] focus:border-transparent transition-all"
-              />
+              <label className="block text-sm font-bold text-gray-700 mb-2">Prep Time</label>
+              <input type="text" name="prepTime" value={formData.prepTime} onChange={handleChange} placeholder="e.g., 45 min" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]" />
             </div>
           </div>
 
           {/* Category Dropdown */}
           <div>
-            <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-2">Category</label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#236b32] focus:border-transparent transition-all bg-white"
-            >
+            <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+            <select name="category" value={formData.category} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32] bg-white">
               <option value="Breakfast">Breakfast</option>
               <option value="Main Dishes">Main Dishes</option>
-              <option value="Snack">Snack</option>
               <option value="Desserts">Desserts</option>
             </select>
           </div>
 
           {/* Ingredients Input */}
           <div>
-            <label htmlFor="ingredients" className="block text-sm font-bold text-gray-700 mb-2">Key Ingredients (Comma Separated)</label>
-            <textarea
-              id="ingredients"
-              name="ingredients"
-              value={formData.ingredients}
-              onChange={handleChange}
-              rows="2"
-              placeholder="e.g., chicken breast, fresh lemon, rosemary, olive oil"
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#236b32] focus:border-transparent transition-all resize-none"
-            ></textarea>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Key Ingredients (Comma Separated)</label>
+            <textarea name="ingredients" value={formData.ingredients} onChange={handleChange} rows="2" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]"></textarea>
           </div>
 
           {/* Description Textarea */}
           <div>
-            <label htmlFor="description" className="block text-sm font-bold text-gray-700 mb-2">Description</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows="4"
-              placeholder="Tell us a little bit about this recipe..."
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#236b32] focus:border-transparent transition-all resize-none"
-            ></textarea>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+            <textarea name="description" value={formData.description} onChange={handleChange} rows="4" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]"></textarea>
           </div>
 
           <hr className="border-gray-100 my-2" />
@@ -172,11 +173,9 @@ export default function AddRecipe() {
           {/* Submit Button */}
           <button 
             type="submit"
-            className="w-full bg-[#236b32] hover:bg-[#1c5528] text-white font-bold py-4 rounded-xl shadow-md transition-colors active:scale-[0.99] flex justify-center items-center gap-2"
+            disabled={isCompressing}
+            className="w-full bg-[#236b32] hover:bg-[#1c5528] disabled:bg-gray-400 text-white font-bold py-4 rounded-xl shadow-md transition-colors flex justify-center items-center gap-2"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
             Save Recipe
           </button>
           
