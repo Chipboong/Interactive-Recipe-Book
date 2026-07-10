@@ -2,21 +2,12 @@ import { RecipeProvider } from '@/context/RecipeContext'
 import { Outlet } from 'react-router'
 import Navbar from '@/components/NavBar'
 import Footer from '@/components/Footer'
-
-
-// export default function App() {
-//   return (
-//     <>
-//     <NavBar/>
-//     <Outlet />
-//     <Footer />
-//     </>
-//   );
-// }
+import ScrollToTop from '@/components/ScrollToTop'
 
 export default function App() {
     return (
         <RecipeProvider>
+            <ScrollToTop />
             <Navbar />
             <Outlet />
             <Footer />
