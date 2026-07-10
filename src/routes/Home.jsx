@@ -6,7 +6,6 @@ import RecipeCard from "../components/recipes/RecipeCard";
 import "@/Circle.css";
 export default function Home() {
     const { recipes, toggleFavorite, favorites } = useRecipes();
-    console.log(recipes);
     return (
         <>
             <div
