@@ -4,8 +4,8 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import Lenis from 'lenis'
 
 import Button from '@/components/Button'
-import heroImage from '@/assets/about-hero.jpg'
-// import heroImage from '@/assets/about-hero-2.jpg'
+import heroImage from '@/assets/about-hero.webp'
+// import heroImage from '@/assets/about-hero.jpg'
 
 const CONFIG = {
   image: { alt: '', objectPosition: 'center center' },
@@ -66,8 +66,8 @@ function HeroParallax() {
             src={heroImage}
             alt={CONFIG.image.alt}
             className='h-full w-full object-cover select-none'
-            // loading='eager'
-            // fetchPriority='high'
+            loading='eager'
+            fetchPriority='high'
             style={{ objectPosition: CONFIG.image.objectPosition }}
           />
         </motion.div>
@@ -130,13 +130,7 @@ function HeroParallax() {
           </p>
 
           <div className='text-left'>
-            {/* <Link
-              to="/" // LETS NOT FORGET HERE
-              className='bg-orange-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-orange-700 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2'
-            >
-              Add Recipes
-            </Link> */}
-            <Button to="/">Add Recipes</Button> 
+            <Button to="/add-recipe">Add Recipes</Button> 
           </div>
         </div>
       </section>
