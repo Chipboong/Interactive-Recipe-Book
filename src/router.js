@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router";
 import App from "./App";
 import Home from "@/routes/Home.jsx";
 import About from "@/routes/About.jsx";
@@ -7,7 +7,7 @@ import Recipes from "@/routes/Recipes";
 import RecipeDetail from "@/routes/RecipeDetail.jsx";
 import AddRecipe from "@/routes/AddRecipe.jsx";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     Component: App,
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
         Component: AddRecipe,
       },
       {
-        path: "/*",
+        path: "*",
         Component: NotFound,
       },
     ],
