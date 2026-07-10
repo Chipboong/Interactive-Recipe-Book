@@ -13,8 +13,8 @@ const getDeskLink = ({ isActive }) => ({
 });
 
 const getDrawerLink = ({ isActive }) => ({
-    backgroundColor: isActive ? "#f0fdf4" : "transparent",
-    color: isActive ? "#1B6D33" : "inherit",
+    backgroundColor: isActive ? "#1B6D33": "transparent",
+    color: isActive ?"#f0fdf4"  : "inherit",
     fontWeight: isActive ? "600" : "400",
     transition: "background-color 0.2s ease-in-out, color 0.2s ease-in-out",
 });
@@ -46,18 +46,18 @@ export default function Navbar() {
                         Home
                     </NavLink>
                     <NavLink
-                        to="/recipes"
-                        style={getDeskLink}
-                        className="hover:text-green-800"
-                    >
-                        Recipes
-                    </NavLink>
-                    <NavLink
                         to="/about"
                         style={getDeskLink}
                         className="hover:text-green-800"
                     >
                         About
+                    </NavLink>
+                    <NavLink
+                        to="/recipes"
+                        style={getDeskLink}
+                        className="hover:text-green-800"
+                    >
+                        Recipes
                     </NavLink>
                 </div>
 
@@ -112,14 +112,11 @@ export default function Navbar() {
                 </div>
             </nav>
 
+
+
+
             <div
-                className={`
-          fixed top-0 left-0 z-50 h-screen w-64
-          bg-white shadow-xl
-          transform transition-transform duration-300 ease-in-out
-          lg:hidden
-          ${navOpen ? "translate-x-0" : "-translate-x-full"}
-        `}
+                className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:hidden ${navOpen ? "translate-x-0" : "-translate-x-full"}`}
             >
                 <div className="flex items-center justify-between border-b p-5">
                     <h2 className="font-roboto-serif text-2xl text-primary-green">
@@ -143,7 +140,14 @@ export default function Navbar() {
                     >
                         Home
                     </NavLink>
-
+                    <NavLink
+                        to="/about"
+                        onClick={() => setNavOpen(false)}
+                        style={getDrawerLink}
+                        className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
+                    >
+                        About
+                    </NavLink>
                     <NavLink
                         to="/recipes"
                         onClick={() => setNavOpen(false)}
@@ -160,15 +164,6 @@ export default function Navbar() {
                     >
                         Add Recipe
                     </NavLink>
-                    <NavLink
-                        to="/about"
-                        onClick={() => setNavOpen(false)}
-                        style={getDrawerLink}
-                        className="rounded-md px-3 py-2 hover:bg-green-100 hover:text-green-800"
-                    >
-                        About
-                    </NavLink>
-
                 </nav>
             </div>
         </>

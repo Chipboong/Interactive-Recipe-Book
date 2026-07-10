@@ -94,15 +94,16 @@ export default function AddRecipe() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans py-8 px-4 sm:px-6 lg:px-8 pb-20">
+    <div className="min-h-screen bg-gray-50 font-roboto py-8 px-4 sm:px-6 lg:px-8 pb-20">
       
       <div className="max-w-3xl mx-auto mb-6 flex items-center">
         <button 
           onClick={() => navigate(-1)}
           type="button"
+          aria-label="Go back"
           className="bg-white hover:bg-gray-100 p-2.5 rounded-full shadow-sm border border-gray-200"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </button>
@@ -110,12 +111,17 @@ export default function AddRecipe() {
       </div>
 
       <main className="max-w-3xl mx-auto bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 sm:p-10">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6" aria-label="Add new recipe form">
           
           {/* Title Input */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Recipe Title</label>
-            <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]" />
+            <label htmlFor="title" className="block text-sm font-bold text-gray-700 mb-2">Recipe Title</label>
+            <input
+              id="title"
+              type="text" name="title" value={formData.title} onChange={handleChange} required
+              placeholder="e.g., Creamy Tomato Basil Pasta"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32] text-sm"
+            />
           </div>
 
           {/* Grid for Image Upload & Prep Time */}
@@ -123,48 +129,70 @@ export default function AddRecipe() {
             
             {/* The New Image Uploader */}
             <div className="flex flex-col gap-3">
-              <label className="block text-sm font-bold text-gray-700">Upload Image</label>
+              <label htmlFor="image" className="block text-sm font-bold text-gray-700">Upload Image</label>
               <input
+                id="image"
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
+                aria-label="Upload recipe image"
                 className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-[#236b32] hover:file:bg-green-100 transition-colors"
               />
               
-              {/* Status or Preview */}
-              {isCompressing ? (
-                <div className="text-sm text-blue-600 font-medium animate-pulse">Compressing image...</div>
-              ) : formData.image ? (
-                <img src={formData.image} alt="Preview" className="w-full h-32 object-cover rounded-xl border border-gray-200" />
-              ) : null}
+              {/* Status or Preview — announced to screen readers via role="status" */}
+              <div role="status" aria-live="polite">
+                {isCompressing ? (
+                  <p className="text-sm text-blue-600 font-medium animate-pulse">Compressing image...</p>
+                ) : formData.image ? (
+                  <img src={formData.image} alt="Recipe image preview" className="w-full h-32 object-cover rounded-xl border border-gray-200" />
+                ) : null}
+              </div>
             </div>
             
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Prep Time</label>
-              <input type="text" name="prepTime" value={formData.prepTime} onChange={handleChange} placeholder="e.g., 45 min" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]" />
+              <label htmlFor="prepTime" className="block text-sm font-bold text-gray-700 mb-2">Prep Time</label>
+              <input
+                id="prepTime"
+                type="text" name="prepTime" value={formData.prepTime} onChange={handleChange}
+                placeholder="e.g., 45 min" required
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32] text-sm"
+              />
             </div>
           </div>
 
           {/* Category Dropdown */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
-            <select name="category" value={formData.category} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32] bg-white">
+            <label htmlFor="category" className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+            <select id="category" name="category" value={formData.category} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32] text-sm bg-white">
               <option value="Breakfast">Breakfast</option>
               <option value="Main Dishes">Main Dishes</option>
-              <option value="Desserts">Desserts</option>
+              <option value="Dessert">Dessert</option>
+              <option value="Snack">Snack</option>
             </select>
           </div>
 
           {/* Ingredients Input */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Key Ingredients (Comma Separated)</label>
-            <textarea name="ingredients" value={formData.ingredients} onChange={handleChange} rows="2" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]"></textarea>
+            <label htmlFor="ingredients" className="block text-sm font-bold text-gray-700 mb-2">Key Ingredients (Comma Separated)</label>
+            <textarea
+              id="ingredients"
+              name="ingredients" value={formData.ingredients} onChange={handleChange}
+              rows="2" required
+              placeholder="e.g., chicken, garlic, lemon"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32] text-sm"
+            ></textarea>
           </div>
 
           {/* Description Textarea */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} rows="4" required className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32]"></textarea>
+            <label htmlFor="description" className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+            <textarea
+              id="description"
+              name="description" value={formData.description} onChange={handleChange}
+              rows="4" required
+              placeholder="Describe your recipe in a few sentences..."
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#236b32] text-sm"
+            ></textarea>
           </div>
 
           <hr className="border-gray-100 my-2" />

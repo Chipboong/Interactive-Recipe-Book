@@ -4,6 +4,8 @@ import Hero from "@/assets/hero.jpg";
 import { useRecipes } from "../context/RecipeContext";
 import RecipeCard from "../components/recipes/RecipeCard";
 import "@/Circle.css";
+import Button from "@/components/Button";
+
 export default function Home() {
     const { recipes, toggleFavorite, favorites } = useRecipes();
     return (
@@ -47,11 +49,12 @@ export default function Home() {
                 </div>
             </div>
             <section className="px-16 py-4">
-                <h2 className="text-4xl font-bold py-8">Featured Recipes</h2>
+                <h2 className="font-roboto-serif text-3xl font-bold py-8">Featured Recipes</h2>
                 <div className="flex justify-around py-4 gap-12 ">
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                        {recipes
+                        {/* {recipes
                             .filter((item) => item.isFeature)
+                            .slice(0, 4)
                             .map((item, index) => {
                                 return (
                                     <li key={index}>
@@ -68,8 +71,25 @@ export default function Home() {
                                         </Link>
                                     </li>
                                 );
-                            })}
+                            })} */}
+                        {['Main Dishes','Breakfast', 'Dessert', 'Snack']
+                            .map(cat => recipes.find(r => r.category === cat))
+                            .filter(Boolean)
+                            .map((item) => (
+                                <li key={item.id}>
+                                    <Link to={`/recipes/${item.id}`}>
+                                        <RecipeCard
+                                            recipe={item}
+                                            isFavorited={favorites.includes(item.id)}
+                                            onFavoriteToggle={toggleFavorite}
+                                        />
+                                    </Link>
+                                </li>
+                            ))}
                     </ul>
+                </div>
+                <div className="text-center mt-10 mb-10">
+                    <Button to="/recipes">View All Recipes</Button>
                 </div>
             </section>
         </>
