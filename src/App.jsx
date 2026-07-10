@@ -1,5 +1,4 @@
 import { RecipeProvider } from '@/context/RecipeContext'
-import {useEffect} from 'react'
 import { Outlet } from 'react-router'
 import Navbar from '@/components/NavBar'
 import Footer from '@/components/Footer'
