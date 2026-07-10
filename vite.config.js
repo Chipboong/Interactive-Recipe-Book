@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/Interactive-Recipe-Book/",
+  base: "/",
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
