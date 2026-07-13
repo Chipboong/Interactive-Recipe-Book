@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams } from "react-router";
 import { useRecipes } from '@/context/RecipeContext';
-import { useNavigate, Navigate } from "react-router";
+import { useNavigate } from "react-router";
+import NotFound from './NotFound.jsx'
 
 function HeartIcon({ filled }) {
   return (
@@ -36,7 +37,8 @@ export default function RecipeDetail() {
     toggleFavorite(id)
   }
 
-  if (!data) return <Navigate to="/recipes" replace/>
+  // if (!data) return <Navigate to="/recipes" replace/>
+  if(!data) return <NotFound/>
 
 
 
