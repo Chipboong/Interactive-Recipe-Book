@@ -15,12 +15,13 @@ function getCookie(key) {
     var b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
     return b ? b.pop() : "";
 }
+function getUser(access_token) {
+    return base64URLdecode(access_token.split(".")[0]);
+}
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(() => {
         try {
-            const user = base64URLdecode(
-                getCookie("access_token").split(".")[0],
-            );
+            const user = getUser(getCookie("access_token"));
             return user ? JSON.parse(user) : null;
         } catch {
             return null;
@@ -32,6 +33,11 @@ export function AuthProvider({ children }) {
             document.cookie =
                 allCookies[i] + "=;expires=" + new Date(0).toUTCString();
         setUser(null);
+    }
+    async function login(email, password) {
+        const res = await apiLogin(email, password);
+        console.log(res);
+        const user = getUser(getCookie("access_token"));
     }
     return (
         <AuthContext.Provider value={{ user, logout }}>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-function Button({ to, onClick, children, variant = 'primary', fullWidth = false }) {
+function Button({ to, onClick, children, variant = 'primary', fullWidth = false, classExtend }) {
 
     const styles = {
         primary: 'bg-primary-green text-white hover:hover:bg-green-700 focus:ring-orange-500',
@@ -15,8 +15,8 @@ function Button({ to, onClick, children, variant = 'primary', fullWidth = false 
         styles[variant],
     ].join(' ')
 
-    if (to) return <Link to={to} className={base}>{children}</Link>
-    return <button onClick={onClick} className={base}>{children}</button>
+    if (to) return <Link to={to} className={`${base} ${classExtend}`}>{children}</Link>
+    return <button onClick={onClick} className={`${base} ${classExtend}`}>{children}</button>
 }
 
 export default Button;
