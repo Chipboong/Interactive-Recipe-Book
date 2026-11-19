@@ -82,9 +82,9 @@ export default function Navbar() {
           </div>*/}
 
                     <div className="w-full">
-                        <NavLink to="/add-recipe" className="hover:cursor-pointer">
+                        <NavLink to="/login" className="hover:cursor-pointer">
                         <button className="bg-primary-green text-white px-6 py-2 w-full whitespace-nowrap rounded-full font-semibold ">
-                            Add Recipe
+                            Login
                         </button>
                     </NavLink>
                     </div>
