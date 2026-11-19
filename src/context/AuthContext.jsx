@@ -1,0 +1,41 @@
+import { createContext, useState, useEffect, useMemo } from "react";
+
+const AuthContext = createContext(null);
+function base64URLdecode(str) {
+    const base64Encoded = str.replace(/-/g, "+").replace(/_/g, "/");
+    const padding =
+        str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
+    const base64WithPadding = base64Encoded + padding;
+    return atob(base64WithPadding)
+        .split("")
+        .map((char) => String.fromCharCode(char.charCodeAt(0)))
+        .join("");
+}
+function getCookie(key) {
+    var b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
+    return b ? b.pop() : "";
+}
+export function AuthProvider({ children }) {
+    const [user, setUser] = useState(() => {
+        try {
+            const user = base64URLdecode(
+                getCookie("access_token").split(".")[0],
+            );
+            return user ? JSON.parse(user) : null;
+        } catch {
+            return null;
+        }
+    });
+    function logout() {
+        let allCookies = document.cookie.split(";");
+        for (let i = 0; i < allCookies.length; i++)
+            document.cookie =
+                allCookies[i] + "=;expires=" + new Date(0).toUTCString();
+        setUser(null);
+    }
+    return (
+        <AuthContext.Provider value={{ user, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
