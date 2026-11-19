@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 
 const AuthContext = createContext(null);
 function base64URLdecode(str) {
@@ -38,4 +38,9 @@ export function AuthProvider({ children }) {
             {children}
         </AuthContext.Provider>
     );
+}
+export function useAuth() {
+    const ctx = useContext(AuthContext);
+    if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+    return ctx;
 }
