@@ -14,3 +14,12 @@ export async function apiRegister(username, email, password) {
     });
     return res.data;
 }
+export async function apiMe() {
+    const res = await apiClient.get("/api/v1/auth/me", {
+        headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+        },
+    });
+    return res.data;
+}

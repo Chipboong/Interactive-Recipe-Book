@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
@@ -10,7 +9,7 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const { login } = useAuth();
+    const { login, user } = useAuth();
 
     const [error, setError] = useState("");
     const [emailErr, setEmailErr] = useState("");
@@ -22,11 +21,16 @@ export default function Login() {
         e.preventDefault();
         setError(null);
         setSubmitting(true);
+        console.log("HERE");
 
         try {
-            const res = await login(username, email, password);
-            console.log(res);
-        } catch {
+            const res = await login(email, password);
+            if (res.success) {
+                navigate("/")
+                return;
+            }
+        } catch (e) {
+            console.log(e);
             setError("Incorrect email or password.");
         } finally {
             setSubmitting(false);
@@ -36,10 +40,10 @@ export default function Login() {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4 py-10">
             <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
-
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold text-gray-900">
-                        Welcome to <span className="text-primary-green">PlateMate</span>
+                        Welcome to{" "}
+                        <span className="text-primary-green">PlateMate</span>
                     </h1>
                     <p className="mt-2 text-sm text-gray-500">
                         Login to your account to continue.
@@ -47,7 +51,6 @@ export default function Login() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-
                     <div>
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                             Email
