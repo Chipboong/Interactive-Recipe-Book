@@ -6,38 +6,48 @@ import NotFound from "@/routes/NotFound.jsx";
 import Recipes from "@/routes/Recipes";
 import RecipeDetail from "@/routes/RecipeDetail.jsx";
 import AddRecipe from "@/routes/AddRecipe.jsx";
+import Register from "./routes/Register";
+import Login from "./routes/Login";
 
 const router = createHashRouter([
-  {
-    path: "/",
-    Component: App,
-    children: [
-      {
-        index: true,
-        Component: Home,
-      },
-      {
-        path: "/about",
-        Component: About,
-        },
-      
-      {
-        path: "/recipes",
-        Component: Recipes,
-      },
-      {
-        path: "recipes/:id",
-        Component: RecipeDetail,
-      },
-      {
-        path: "/add-recipe",
-        Component: AddRecipe,
-      },
-      {
-        path: "*",
-        Component: NotFound,
-      },
-    ],
-  },
+    {
+        path: "/",
+        Component: App,
+        children: [
+            {
+                index: true,
+                Component: Home,
+            },
+            {
+                path: "/about",
+                Component: About,
+            },
+
+            {
+                path: "/recipes",
+                Component: Recipes,
+            },
+            {
+                path: "recipes/:id",
+                Component: RecipeDetail,
+            },
+            {
+                path: "/add-recipe",
+                Component: AddRecipe,
+            },
+            {
+                path: "/login",
+                Component: Login,
+            },
+            {
+                path: "/register",
+                Component: Register,
+            },
+            {
+                path: "*",
+                Component: NotFound,
+            },
+        ],
+    },
 ]);
 export default router;
