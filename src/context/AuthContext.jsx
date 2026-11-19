@@ -1,46 +1,42 @@
 import { createContext, useState, useContext } from "react";
+import { apiLogin, apiMe } from "../api/auth";
+import { useEffect } from "react";
 
 const AuthContext = createContext(null);
-function base64URLdecode(str) {
-    const base64Encoded = str.replace(/-/g, "+").replace(/_/g, "/");
-    const padding =
-        str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
-    const base64WithPadding = base64Encoded + padding;
-    return atob(base64WithPadding)
-        .split("")
-        .map((char) => String.fromCharCode(char.charCodeAt(0)))
-        .join("");
-}
-function getCookie(key) {
-    var b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
-    return b ? b.pop() : "";
-}
-function getUser(access_token) {
-    return base64URLdecode(access_token.split(".")[0]);
-}
+
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(() => {
-        try {
-            const user = getUser(getCookie("access_token"));
-            return user ? JSON.parse(user) : null;
-        } catch {
-            return null;
-        }
-    });
-    function logout() {
-        let allCookies = document.cookie.split(";");
-        for (let i = 0; i < allCookies.length; i++)
-            document.cookie =
-                allCookies[i] + "=;expires=" + new Date(0).toUTCString();
-        setUser(null);
-    }
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const res = await apiMe();
+        
+                setUser(res.user); // Changed from res.data.user
+            } catch {
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
+    }, []);
+
     async function login(email, password) {
         const res = await apiLogin(email, password);
-        console.log(res);
-        const user = getUser(getCookie("access_token"));
+        const user = await apiMe();
+        if (!user.success) {
+            return {
+                success: false,
+            };
+        }
+        setUser(user.user);
+        return res;
     }
     return (
-        <AuthContext.Provider value={{ user, logout }}>
+        <AuthContext.Provider value={{ user, loading, login }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 const getDeskLink = ({ isActive }) => ({
     fontWeight: isActive ? "700" : "500",
@@ -13,14 +14,15 @@ const getDeskLink = ({ isActive }) => ({
 });
 
 const getDrawerLink = ({ isActive }) => ({
-    backgroundColor: isActive ? "#1B6D33": "transparent",
-    color: isActive ?"#f0fdf4"  : "inherit",
+    backgroundColor: isActive ? "#1B6D33" : "transparent",
+    color: isActive ? "#f0fdf4" : "inherit",
     fontWeight: isActive ? "600" : "400",
     transition: "background-color 0.2s ease-in-out, color 0.2s ease-in-out",
 });
 
 export default function Navbar() {
     const [navOpen, setNavOpen] = useState(false);
+    const { user, loading } = useAuth();
 
     return (
         <>
@@ -82,11 +84,27 @@ export default function Navbar() {
           </div>*/}
 
                     <div className="w-full">
-                        <NavLink to="/login" className="hover:cursor-pointer">
-                        <button className="bg-primary-green text-white px-6 py-2 w-full whitespace-nowrap rounded-full font-semibold ">
-                            Login
-                        </button>
-                    </NavLink>
+                        {loading ? (
+                            <div className="h-10 w-full rounded-full bg-gray-200 animate-pulse" />
+                        ) : user ? (
+                            <NavLink
+                                to="/add-recipe"
+                                className="hover:cursor-pointer"
+                            >
+                                <button className="bg-primary-green text-white px-6 py-2 w-full whitespace-nowrap rounded-full font-semibold">
+                                    Add Recipe
+                                </button>
+                            </NavLink>
+                        ) : (
+                            <NavLink
+                                to="/login"
+                                className="hover:cursor-pointer"
+                            >
+                                <button className="bg-primary-green text-white px-6 py-2 w-full whitespace-nowrap rounded-full font-semibold">
+                                    Login
+                                </button>
+                            </NavLink>
+                        )}
                     </div>
                 </div>
 
@@ -111,9 +129,6 @@ export default function Navbar() {
                     </button>
                 </div>
             </nav>
-
-
-
 
             <div
                 className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:hidden ${navOpen ? "translate-x-0" : "-translate-x-full"}`}
