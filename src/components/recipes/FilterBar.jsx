@@ -58,7 +58,7 @@ function Dropdown({ label, options, selected, onSelect }) {
                 onClick={() => setOpen(prev => !prev)}
                 aria-haspopup="listbox"
                 aria-expanded={open}
-                className="font-roboto text-gray-700 bg-white border border-gray-200 rounded-full hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-700"
+                className="font-roboto text-gray-700 bg-white border border-gray-200 rounded-full hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-green-700"
                 style={{
                     display: 'flex', alignItems: 'center', gap: '0.5rem',
                     padding: '0.45rem 1rem',
@@ -151,7 +151,7 @@ function FilterBar() {
 
                 {/* search input */}
                 <label
-                    className="bg-white border border-gray-200 rounded-full hover:border-gray-400 focus-within:ring-2 focus-within:ring-green-700"
+                    className="bg-white border border-gray-200 rounded-full hover:border-gray-400 focus-within:ring-1 focus-within:ring-green-700"
                     style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.45rem 1rem', transition: 'border-color 0.2s ease',
                             cursor: 'text',}}
                 >

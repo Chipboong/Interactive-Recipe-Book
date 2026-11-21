@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { apiRegister } from "../api/auth";
 import Button from "../components/Button";
+import PasswordField from "../components/PasswordField";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -109,7 +110,7 @@ export default function Register() {
                             placeholder="Enter your username"
                             required
                             autoFocus
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition focus:border-primary-green focus:ring-2 focus:ring-blue-100"
+                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition focus:border-primary-green focus:ring-1 focus:ring-green-700"
                         />
 
                         {usernameErr && (
@@ -130,7 +131,7 @@ export default function Register() {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
                             required
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition focus:border-primary-green focus:ring-2 focus:ring-blue-100"
+                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition focus:border-primary-green focus:ring-1 focus:ring-green-700"
                         />
 
                         {emailErr && (
@@ -140,26 +141,15 @@ export default function Register() {
                         )}
                     </div>
 
-                    <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            required
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition focus:border-primary-green focus:ring-2 focus:ring-blue-100"
-                        />
-
-                        {passwordErr && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {passwordErr}
-                            </p>
-                        )}
-                    </div>
+                    <PasswordField
+                        id="register-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        error={passwordErr}
+                        placeholder="Create a password"
+                        autoComplete="new-password"
+                        required
+                    />
 
                     {error && (
                         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">
@@ -171,8 +161,7 @@ export default function Register() {
                         type="submit"
                         disabled={submitting}
                         fullWidth={true}
-                        classExtend="w-full rounded-lg  py-4 font-semibold text-white transition  focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
+                        classExtend="w-full cursor-pointer rounded-lg py-4 font-semibold text-white outline-none transition focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"                    >
                         {submitting ? "Registering..." : "Create Account"}
                     </Button>
                 </form>

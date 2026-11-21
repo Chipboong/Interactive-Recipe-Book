@@ -1,5 +1,5 @@
 import { createContext, useState, useContext } from "react";
-import { apiLogin, apiMe } from "../api/auth";
+import { apiLogin, apiLogout, apiMe } from "../api/auth";
 import { useEffect } from "react";
 
 const AuthContext = createContext(null);
@@ -34,9 +34,18 @@ export function AuthProvider({ children }) {
         }
         setUser(user.user);
         return res;
+    } 
+    async function logout() {
+        try {
+            await apiLogout();
+        } catch {
+            // alr logged out, or the server is unreachable. clear the UI anyway.
+        } finally {
+            setUser(null);
+        }
     }
     return (
-        <AuthContext.Provider value={{ user, loading, login }}>
+        <AuthContext.Provider value={{ user, loading, login, logout}}>
             {children}
         </AuthContext.Provider>
     );

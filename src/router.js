@@ -8,6 +8,7 @@ import RecipeDetail from "@/routes/RecipeDetail.jsx";
 import AddRecipe from "@/routes/AddRecipe.jsx";
 import Register from "./routes/Register.jsx";
 import Login from "./routes/Login.jsx";
+import { ProtectedRoute } from "@/components/ProtectedRoute.jsx";
 
 const router = createHashRouter([
     {
@@ -32,10 +33,6 @@ const router = createHashRouter([
                 Component: RecipeDetail,
             },
             {
-                path: "/add-recipe",
-                Component: AddRecipe,
-            },
-            {
                 path: "/login",
                 Component: Login,
             },
@@ -44,8 +41,17 @@ const router = createHashRouter([
                 Component: Register,
             },
             {
+                Component: ProtectedRoute,
+                children: [
+                    {
+                        path: "add-recipe",
+                        Component: AddRecipe,
+                    },
+                ]
+            },
+            {
                 path: "*",
-                Component: NotFound,
+                Component: NotFound
             },
         ],
     },
