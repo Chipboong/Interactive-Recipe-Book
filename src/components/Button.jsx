@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 function Button({ to, onClick, children, variant = 'primary', fullWidth = false, classExtend }) {
 
     const styles = {
-        primary: 'bg-primary-green text-white hover:hover:bg-green-700 focus:ring-orange-500',
+        primary: 'border border-transparent bg-primary-green text-white hover:bg-green-700 focus:ring-orange-500',
         outline: 'border border-gray-300 text-gray-700 hover:border-gray-500 focus:ring-gray-400',
     }
 

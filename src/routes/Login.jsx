@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/Button";
+import PasswordField from "../components/PasswordField";
 
 export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || "/";
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -26,7 +29,7 @@ export default function Login() {
         try {
             const res = await login(email, password);
             if (res.success) {
-                navigate("/")
+                navigate(from, { replace: true })
                 return;
             }
         } catch (e) {
@@ -63,7 +66,7 @@ export default function Login() {
                             placeholder="Enter your email"
                             required
                             autoFocus
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-primary-green focus:ring-2 focus:ring-blue-100"
+                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-primary-green focus:ring-1 focus:ring-green-700"
                         />
 
                         {emailErr && (
@@ -73,26 +76,16 @@ export default function Login() {
                         )}
                     </div>
 
-                    <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            required
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-primary-green focus:ring-2 focus:ring-blue-100"
-                        />
-
-                        {passwordErr && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {passwordErr}
-                            </p>
-                        )}
-                    </div>
+                    <PasswordField
+                        id="login-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        error={passwordErr}
+                        placeholder="Enter your password"
+                        autoComplete="current-password"
+                        showHint={false}
+                        required
+                    />
 
                     {/* General Error */}
                     {error && (
@@ -104,9 +97,9 @@ export default function Login() {
                     {/* Submit */}
                     <Button
                         fullWidth={true}
-                        classExtend="w-full rounded-lg  py-3 font-semibold text-white transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                         type="submit"
                         disabled={submitting}
+                        classExtend="w-full cursor-pointer rounded-lg py-3 font-semibold text-white outline-none transition !focus:ring-2 !focus:ring-green-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {submitting ? "Logging in..." : "Login"}
                     </Button>
