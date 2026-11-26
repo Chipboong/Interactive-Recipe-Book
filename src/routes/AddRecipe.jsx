@@ -1,22 +1,31 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useRecipes } from '@/context/RecipeContext'; 
+import { useRecipes } from '@/context/RecipeContext';
 
 export default function AddRecipe() {
   const navigate = useNavigate();
   const { addRecipe } = useRecipes();
-  
+
   // Added an "isCompressing" state to show a loading indicator during compression
   const [isCompressing, setIsCompressing] = useState(false);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+
   const [formData, setFormData] = useState({
     title: '',
     image: '', // This will now hold our compressed Base64 string
     description: '',
     category: 'Main Dishes',
     prepTime: '',
-    ingredients: '', 
+    ingredients: '',
   });
+  // Clean up the object URL when the preview changes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,11 +41,11 @@ export default function AddRecipe() {
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    
+
     reader.onload = (event) => {
       const img = new Image();
       img.src = event.target.result;
-      
+
       img.onload = () => {
         // 1. Create a hidden canvas
         const canvas = document.createElement('canvas');
@@ -56,48 +65,86 @@ export default function AddRecipe() {
 
         // 3. Draw the resized image onto the canvas
         ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              setIsCompressing(false);
+              return;
+            }
+            setImageFile(blob);
+            setImagePreview(URL.createObjectURL(blob));
+            setIsCompressing(false);
+          },
+          'image/jpeg',
+          0.7
+        );
 
-        // 4. Export as a compressed JPEG Base64 string (0.7 = 70% quality)
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+      //   // 4. Export as a compressed JPEG Base64 string (0.7 = 70% quality)
+      //   const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-        // 5. Save to state and turn off loading
-        setFormData((prev) => ({ ...prev, image: compressedBase64 }));
-        setIsCompressing(false);
+      //   // 5. Save to state and turn off loading
+      //   setFormData((prev) => ({ ...prev, image: compressedBase64 }));
+      //   setIsCompressing(false);
       };
     };
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Ensure they uploaded an image
-    if (!formData.image) {
+    if (!imageFile) {
       alert("Please upload an image first!");
       return;
     }
 
-    const newRecipe = {
-      id: Date.now().toString(),
-      title: formData.title,
-      image: formData.image,
-      description: formData.description,
-      category: formData.category,
-      prepTime: formData.prepTime,
-      keyIngredients: formData.ingredients
+    // const newRecipe = {
+    //   title: formData.title.trim(),
+    //   description: formData.description.trim(),
+    //   category: formData.category,
+    //   prep_time_mins: formData.prepTime.trim(),
+    //   ingredient: formData.ingredients
+    //     .split(',')
+    //     .map((item) => item.trim())
+    //     .filter(Boolean)
+    //     .join(', '),
+    //   image: formData.image,
+    //   status: 'published',
+
+    // };
+    const payload = new FormData();
+    payload.append('title', formData.title.trim());
+    payload.append('description', formData.description.trim());
+    payload.append('category', formData.category);
+    payload.append('prep_time_mins', formData.prepTime.trim());
+    payload.append(
+      'ingredient',
+      formData.ingredients
         .split(',')
         .map((item) => item.trim())
-        .filter((item) => item !== ''), 
-    };
+        .filter(Boolean)
+        .join(', ')
+    );
+    payload.append('status', 'published');
+    // 'recipe.jpg' ensures Multer's ALLOWED_EXT check passes
+    payload.append('image', imageFile, 'recipe.jpg');
+    try {
+      setIsSubmitting(true);
 
-    addRecipe(newRecipe);
-    navigate('/recipes');
+      await addRecipe(payload);
+      navigate('/recipes');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to save recipe. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-roboto py-8 px-4 sm:px-6 lg:px-8 pb-20">
-      
+
       <div className="max-w-3xl mx-auto mb-6 flex items-center">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           type="button"
           aria-label="Go back"
@@ -112,7 +159,7 @@ export default function AddRecipe() {
 
       <main className="max-w-3xl mx-auto bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 sm:p-10">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6" aria-label="Add new recipe form">
-          
+
           {/* Title Input */}
           <div>
             <label htmlFor="title" className="block text-sm font-bold text-gray-700 mb-2">Recipe Title</label>
@@ -126,7 +173,7 @@ export default function AddRecipe() {
 
           {/* Grid for Image Upload & Prep Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            
+
             {/* The New Image Uploader */}
             <div className="flex flex-col gap-3">
               <label htmlFor="image" className="block text-sm font-bold text-gray-700">Upload Image</label>
@@ -138,7 +185,7 @@ export default function AddRecipe() {
                 aria-label="Upload recipe image"
                 className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-[#236b32] hover:file:bg-green-100 transition-colors"
               />
-              
+
               {/* Status or Preview — announced to screen readers via role="status" */}
               <div role="status" aria-live="polite">
                 {isCompressing ? (
@@ -148,7 +195,7 @@ export default function AddRecipe() {
                 ) : null}
               </div>
             </div>
-            
+
             <div>
               <label htmlFor="prepTime" className="block text-sm font-bold text-gray-700 mb-2">Prep Time</label>
               <input
@@ -198,14 +245,14 @@ export default function AddRecipe() {
           <hr className="border-gray-100 my-2" />
 
           {/* Submit Button */}
-          <button 
+          <button
             type="submit"
-            disabled={isCompressing}
+            disabled={isCompressing || isSubmitting}
             className="w-full bg-[#236b32] hover:bg-[#1c5528] disabled:bg-gray-400 text-white font-bold py-4 rounded-xl shadow-md transition-colors flex justify-center items-center gap-2"
           >
-            Save Recipe
+            {isSubmitting ? 'Saving...' : 'Save Recipe'}
           </button>
-          
+
         </form>
       </main>
     </div>
