@@ -130,7 +130,9 @@ export default function RecipeDetail() {
                 style={{ fontSize: 'clamp(0.8rem, 1.05vw, 0.95rem)' }}
               >
                 <div className="w-2 h-2 rounded-full bg-[#236b32] shrink-0" />
-                {ingredient}
+                {ingredient
+                  .replace(/[\[\]"*]/g, '')
+                  .trim()}
               </li>
             ))}
           </ul>
