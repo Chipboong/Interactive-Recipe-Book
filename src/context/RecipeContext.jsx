@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
-import seedRecipes from '@/data/recipes'
-import { getRecipe, uploadRecipe } from '@/api/recipe'
+import { getRecipe, uploadRecipe, deleteRecipe as deleteRecipeApi } from '@/api/recipe'
 
 const RecipeContext = createContext(null)
 
@@ -137,6 +136,17 @@ export function RecipeProvider({ children }) {
         }
     }
 
+    async function deleteRecipe(recipeId) {
+    try {
+        await deleteRecipeApi(recipeId)
+        setApiRecipes(prev => prev.filter(r => r.id !== recipeId))
+        setFavorites(prev => prev.filter(id => id !== recipeId))
+    } catch (err) {
+        console.error('Failed to delete recipe:', err)
+        throw err
+    }
+}
+
     // toggle a recipe in/out of favs
     function toggleFavorite(recipeId) {
         setFavorites(prev => prev.includes(recipeId) ? prev.filter(id => id !== recipeId) : [...prev, recipeId]
@@ -174,6 +184,7 @@ export function RecipeProvider({ children }) {
         addRecipe,
         getRecipes: fetchRecipes,
         toggleFavorite,
+        deleteRecipe
     }
 
     return (
