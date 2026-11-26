@@ -230,7 +230,7 @@ export default function RecipeDetail() {
                         <div className="flex flex-wrap gap-3 mb-6">
                             <button
                                 onClick={() =>
-                                    navigate(`/recipes/${id}/edit`)
+                                    navigate(`/update-recipe/${id}`)
                                 }
                                 className="px-5 py-2 bg-[#236b32] text-white rounded-xl font-semibold hover:bg-green-800 transition"
                             >
