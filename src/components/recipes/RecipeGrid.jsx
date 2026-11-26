@@ -1,10 +1,13 @@
 import {useRecipes} from '@/context/RecipeContext'
 import {Link} from "react-router"
+import { useAuth } from '@/context/AuthContext'
 
 import RecipeCard from './RecipeCard'
 
 function RecipeGrid() {
-    const {filteredRecipes, favorites, toggleFavorite} = useRecipes()
+    const {filteredRecipes, favorites, toggleFavorite, deleteRecipe} = useRecipes()
+    const { user } = useAuth()
+    const currentUserId = user?.user_id ?? user?.id
     
     if (filteredRecipes.length === 0) {
         return(
@@ -23,16 +26,24 @@ function RecipeGrid() {
                 gap: '1.5rem', listStyle: 'none', padding: 0, margin: 0 }}
                 aria-label={`${filteredRecipes.length} recipe${filteredRecipes.length !== 1 ? 's' : ''} found`}
             >
-                {filteredRecipes.map((recipe) => (
+                {filteredRecipes.map((recipe) => {
+                    const isOwner = Boolean(
+                        currentUserId && recipe.user_id && Number(recipe.user_id) === Number(currentUserId)
+                    )
+                    return (
                     <li key={recipe.id}>
                         <Link to={`/recipes/${recipe.id}`}>
-                        <RecipeCard recipe={recipe} 
+                        <RecipeCard
+                                    recipe={recipe}
                                     isFavorited={favorites.includes(recipe.id)}
                                     onFavoriteToggle={toggleFavorite}
+                                    canDelete={isOwner}
+                                    onDelete={deleteRecipe}
                         />
                         </Link>
                     </li>
-                ))}
+                    )
+                })}
             </ol>
 
         </section>
