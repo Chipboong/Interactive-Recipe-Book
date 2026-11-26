@@ -1,28 +1,73 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import seedRecipes from '@/data/recipes'
+import { getRecipe, uploadRecipe } from '@/api/recipe'
 
 const RecipeContext = createContext(null)
 
 export const CATEGORIES = ['All','Breakfast','Main Dishes', 'Dessert','Snack']
 
+// Normalize backend snake_case fields to match seedRecipes
+function normalizeRecipe(r) {
+    return {
+        ...r,
+        prepTime: r.prep_time_mins ?? r.prepTime ?? '',
+        keyIngredients: Array.isArray(r.keyIngredients)
+            ? r.keyIngredients
+            : typeof r.ingredient === 'string'
+                ? r.ingredient.split(',').map(i => i.trim()).filter(Boolean)
+                : [],
+    }
+}
+
+function extractRecipeList(data) {
+    if (Array.isArray(data)) return data
+    if (Array.isArray(data?.recipes)) return data.recipes
+    if (Array.isArray(data?.data)) return data.data
+    if (Array.isArray(data?.data?.recipes)) return data.data.recipes
+    if (data?.id) return [data]
+    return []
+}
 
 
 export function RecipeProvider({ children }) {
     // seed + user added from localStorage 
-    const [userRecipes, setUserRecipes] = useState(() => {
-        try {
-            const stored =localStorage.getItem('platemate_recipes')
-            return stored ? JSON.parse(stored): []
-        } catch {
-            return []
-        }
-    })
+    // const [userRecipes, setUserRecipes] = useState(() => {
+    //     try {
+    //         const stored =localStorage.getItem('platemate_recipes')
+    //         return stored ? JSON.parse(stored): []
+    //     } catch {
+    //         return []
+    //     }
+    // })
 
     // then, merge seed recipes with user-added ones
-    const recipes = useMemo(() => [...seedRecipes, ...userRecipes], [userRecipes])
+    const [apiRecipes, setApiRecipes] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+
+    const fetchRecipes = useCallback(async () => {
+        try {
+            setLoading(true)
+            setError(null)
+            const data = await getRecipe()
+            const list = extractRecipeList(data)
+            setApiRecipes(list.map(normalizeRecipe))
+        } catch (err) {
+            console.error('Failed to fetch recipes:', err)
+            setError(err.message || 'Failed to load recipes')
+        } finally {
+            setLoading(false)
+        }
+    }, [])
+
+    // 1. Fetch recipes once when the app loads
+    useEffect(() => {
+        fetchRecipes()
+    }, [])
+    const recipes = useMemo(() => [...apiRecipes], [apiRecipes])
 
     // sync user recipes to localStorage whenever they change
-    useEffect(() => {localStorage.setItem('platemate_recipes',JSON.stringify(userRecipes))}, [userRecipes])
+    // useEffect(() => {localStorage.setItem('platemate_recipes',JSON.stringify(userRecipes))}, [userRecipes])
 
 
     const [favorites, setFavorites] = useState(() => {
@@ -80,13 +125,16 @@ export function RecipeProvider({ children }) {
 
     // ACTION
     // add a new recipe (user-created)
-    function addRecipe(newRecipe) {
-        const recipe = {
-            ...newRecipe, id: `user-${Date.now()}`,  //use unique id based on timestamp
-            // AI suggested this over counter id where have to be stored somewhere persistent, also prone to duplicate ID
-            // another way is to use Math.random()
+    async function addRecipe(newRecipe) {
+        
+        try {
+            const res = await uploadRecipe(newRecipe)
+            await fetchRecipes()
+            return res;
+        } catch (err) {
+            console.error('Failed to upload recipe:', err)
+            throw err // Let the form component catch and display the error
         }
-        setUserRecipes(prev => [...prev, recipe])
     }
 
     // toggle a recipe in/out of favs
@@ -107,6 +155,8 @@ export function RecipeProvider({ children }) {
         filteredRecipes,
         ingredients,
         favorites,
+        loading,
+        error,
 
         // filter state
         selectedCategory,
@@ -115,13 +165,14 @@ export function RecipeProvider({ children }) {
         showFavorites,
 
         // filter actions
-        handleCategoryChange, // use this instead of setSelectedCategory directly
+        handleCategoryChange,
         setSelectedIngredient,
         setSearchQuery,
         setShowFavorites,
 
         // recipe actions
         addRecipe,
+        refreshRecipes: fetchRecipes,
         toggleFavorite,
     }
 
