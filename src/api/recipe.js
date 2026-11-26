@@ -1,8 +1,19 @@
 import { apiClient } from './apiClient'
 
-export async function getRecipe(id){
+export async function getRecipe(id, filters = {}) {
     const endpoint = id ? `/recipes/${id}` : "/recipes";
-    const res = await apiClient.get(`/api/v1${endpoint}`)
+
+    const params = {};
+    if (!id) {
+        if (filters.category && filters.category !== 'All') {
+            params.category = filters.category;
+        }
+        if (filters.ingredient) {
+            params.ingredient = filters.ingredient;
+        }
+    }
+
+    const res = await apiClient.get(`/api/v1${endpoint}`, { params });
     return res.data;
 }
 // Delete a recipe by ID

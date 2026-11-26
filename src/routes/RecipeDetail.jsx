@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useRecipes } from "@/context/RecipeContext";
-import { useNavigate } from "react-router";
+import { getRecipe } from "@/api/recipe";
 import NotFound from "./NotFound.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
@@ -31,55 +31,125 @@ function HeartIcon({ filled }) {
 
 export default function RecipeDetail() {
     const { id } = useParams();
-    const { recipes, favorites, toggleFavorite, deleteRecipe } = useRecipes();
+    const {
+        recipes,
+        favorites,
+        toggleFavorite,
+        deleteRecipe,
+    } = useRecipes();
+
     const navigate = useNavigate();
-    const [isDeleting, setIsDeleting] = useState(false);
-    const isFavorited = favorites.includes(id);
-    const data = recipes.find((recipe) => recipe.id === Number(id));
     const { user } = useAuth();
+
+    const cachedRecipe = recipes.find(
+        (recipe) => String(recipe.id) === String(id)
+    );
+
+    const [fetchedRecipe, setFetchedRecipe] = useState(null);
+    const [loading, setLoading] = useState(!cachedRecipe);
+    const [notFound, setNotFound] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // Fetch recipe if it isn't already in context
+    useEffect(() => {
+        if (cachedRecipe) {
+            setFetchedRecipe(null);
+            setLoading(false);
+            setNotFound(false);
+            return;
+        }
+
+        let cancelled = false;
+
+        async function fetchSingleRecipe() {
+            try {
+                setLoading(true);
+                setNotFound(false);
+
+                const raw = await getRecipe(id);
+                const item = Array.isArray(raw)
+                    ? raw[0]
+                    : raw?.recipe ?? raw?.data ?? raw;
+
+                if (!cancelled) {
+                    if (item && item.id) {
+                        setFetchedRecipe(item);
+                    } else {
+                        setNotFound(true);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch recipe:", err);
+                if (!cancelled) setNotFound(true);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        }
+
+        fetchSingleRecipe();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [id, cachedRecipe]);
+
+    // Escape key navigates back
+    useEffect(() => {
+        function handleKeyDown(e) {
+            if (e.key === "Escape") navigate("/recipes");
+        }
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () =>
+            document.removeEventListener("keydown", handleKeyDown);
+    }, [navigate]);
+
+    const data = cachedRecipe || fetchedRecipe;
+
+    if (!data && loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-500">
+                Loading recipe...
+            </div>
+        );
+    }
+
+    if (notFound || !data) return <NotFound />;
+
+    const isFavorited = favorites.includes(data.id);
+
+    const isOwner =
+        user &&
+        Number(user.user_id ?? user.id) === Number(data.user_id);
+
+    function handleFavoriteClick(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleFavorite(data.id);
+    }
+
     async function handleDelete() {
         const confirmed = window.confirm(
-            `Are you sure you want to delete "${data.title}"? This action cannot be undone.`,
+            `Are you sure you want to delete "${data.title}"? This action cannot be undone.`
         );
 
         if (!confirmed) return;
 
         try {
             setIsDeleting(true);
-
             await deleteRecipe(id);
-
-            navigate("/recipes", {
-                replace: true,
-            });
+            navigate("/recipes", { replace: true });
         } catch (err) {
             alert(err.message || "Failed to delete recipe.");
         } finally {
             setIsDeleting(false);
         }
     }
-    console.log(data);
-    const isOwner = user && Number(user.user_id) === Number(data.user_id);
-    useEffect(() => {
-        function handleKeyDown(e) {
-            if (e.key === "Escape") navigate("/recipes");
-        }
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [navigate]);
-
-    function handleFavoriteClick(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        toggleFavorite(id);
-    }
-
-    // if (!data) return <Navigate to="/recipes" replace/>
-    if (!data) return <NotFound />;
 
     return (
         <div className="min-h-screen bg-gray-50 font-roboto pb-20">
-            {/* --- Hero Image Section --- */}
+            {/* Hero Image */}
             <div className="relative w-full h-80 sm:h-96 md:h-[400px]">
                 <img
                     src={data.image}
@@ -87,9 +157,7 @@ export default function RecipeDetail() {
                     className="w-full h-full object-cover"
                 />
 
-                {/* Top Navigation Bar (Overlaid) */}
                 <div className="absolute top-0 w-full p-4 sm:p-6 flex justify-between items-center z-10">
-                    {/* Back Button */}
                     <button
                         type="button"
                         aria-label="Go back"
@@ -114,7 +182,6 @@ export default function RecipeDetail() {
                         </svg>
                     </button>
 
-                    {/* Favorite Button */}
                     <button
                         onClick={handleFavoriteClick}
                         aria-label={
@@ -139,9 +206,8 @@ export default function RecipeDetail() {
                 </div>
             </div>
 
-            {/* --- Content Section (Overlaps the image) --- */}
+            {/* Content */}
             <main className="relative bg-white rounded-t-[3rem] -mt-16 px-6 sm:px-12 pt-10 pb-12 max-w-4xl mx-auto shadow-sm min-h-[50vh]">
-                {/* Title & Badges */}
                 <div className="flex flex-col gap-4 mb-8">
                     <h1
                         className="font-roboto font-bold text-gray-900 leading-tight"
@@ -151,57 +217,41 @@ export default function RecipeDetail() {
                     </h1>
 
                     <div className="flex flex-wrap items-center gap-3">
-                        {/* Category Badge */}
                         <span className="px-4 py-1.5 bg-[#236b32] text-white text-sm font-bold rounded-full shadow-sm">
                             {data.category}
                         </span>
 
-                        {/* Prep Time Badge */}
                         <span className="flex items-center gap-1.5 px-4 py-1.5 bg-gray-100 text-gray-400 text-sm font-bold rounded-full">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2}
-                                stroke="currentColor"
-                                className="w-4 h-4"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                            {data.prepTime}
+                            {data.prepTime ?? data.prep_time_mins}
                         </span>
-                        {isOwner && (
-                            <div className="flex flex-wrap gap-3 mb-6">
-                                <button
-                                    onClick={() =>
-                                        navigate(`/recipes/${id}/edit`)
-                                    }
-                                    className="px-5 py-2 bg-[#236b32] text-white rounded-xl font-semibold hover:bg-green-800 transition"
-                                >
-                                    Edit Recipe
-                                </button>
-
-                                <button
-                                    onClick={handleDelete}
-                                    disabled={isDeleting}
-                                    className="px-5 py-2 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 disabled:bg-gray-400 transition"
-                                >
-                                    {isDeleting
-                                        ? "Deleting..."
-                                        : "Delete Recipe"}
-                                </button>
-                            </div>
-                        )}
                     </div>
+
+                    {isOwner && (
+                        <div className="flex flex-wrap gap-3 mb-6">
+                            <button
+                                onClick={() =>
+                                    navigate(`/recipes/${id}/edit`)
+                                }
+                                className="px-5 py-2 bg-[#236b32] text-white rounded-xl font-semibold hover:bg-green-800 transition"
+                            >
+                                Edit Recipe
+                            </button>
+
+                            <button
+                                onClick={handleDelete}
+                                disabled={isDeleting}
+                                className="px-5 py-2 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 disabled:bg-gray-400 transition"
+                            >
+                                {isDeleting
+                                    ? "Deleting..."
+                                    : "Delete Recipe"}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <hr className="border-gray-100 mb-8" />
 
-                {/* Description */}
                 <section className="mb-10">
                     <h2 className="text-lg font-bold text-gray-900 mb-3">
                         About this recipe
@@ -211,24 +261,29 @@ export default function RecipeDetail() {
                     </p>
                 </section>
 
-                {/* Key Ingredients */}
                 <section>
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                         Key Ingredients
                     </h2>
+
                     <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {data.keyIngredients.map((ingredient, index) => (
-                            <li
-                                key={index}
-                                className="flex items-center gap-3 p-3 bg-green-50/50 border border-green-100 rounded-2xl text-gray-800 font-medium capitalize"
-                                style={{
-                                    fontSize: "clamp(0.8rem, 1.05vw, 0.95rem)",
-                                }}
-                            >
-                                <div className="w-2 h-2 rounded-full bg-[#236b32] shrink-0" />
-                                {ingredient.replace(/[\[\]"*]/g, "").trim()}
-                            </li>
-                        ))}
+                        {(data.keyIngredients || data.ingredient?.split(",") || []).map(
+                            (ingredient, index) => (
+                                <li
+                                    key={index}
+                                    className="flex items-center gap-3 p-3 bg-green-50/50 border border-green-100 rounded-2xl text-gray-800 font-medium capitalize"
+                                    style={{
+                                        fontSize:
+                                            "clamp(0.8rem, 1.05vw, 0.95rem)",
+                                    }}
+                                >
+                                    <div className="w-2 h-2 rounded-full bg-[#236b32] shrink-0" />
+                                    {String(ingredient)
+                                        .replace(/[\[\]"*]/g, "")
+                                        .trim()}
+                                </li>
+                            )
+                        )}
                     </ul>
                 </section>
             </main>
