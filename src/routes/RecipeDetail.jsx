@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from "react-router";
 import { useRecipes } from '@/context/RecipeContext';
+import { getRecipe } from '@/api/recipe';
 import { useNavigate } from "react-router";
 import NotFound from './NotFound.jsx'
 
@@ -22,23 +23,76 @@ export default function RecipeDetail() {
   const { recipes, favorites, toggleFavorite } = useRecipes();
   const navigate = useNavigate();
 
-  const isFavorited = favorites.includes(id);
-  const data = recipes.find((recipe) => recipe.id === Number(id));
+  const cachedRecipe = recipes.find((r) => String(r.id) === String(id));
+
+  const [fetchedRecipe, setFetchedRecipe] = useState(null);
+  const [loading, setLoading] = useState(!cachedRecipe);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    function handleKeyDown(e) { if (e.key === 'Escape') navigate('/recipes') }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [navigate])
+    if (cachedRecipe) {
+      setLoading(false);
+      setNotFound(false);
+      return;
+    }
 
-  function handleFavoriteClick(e){
-    e.stopPropagation()
-    e.preventDefault()
-    toggleFavorite(id)
+    let cancelled = false;
+
+    async function fetchSingleRecipe() {
+      try {
+        setLoading(true);
+        setNotFound(false);
+        const raw = await getRecipe(id);
+        const item = Array.isArray(raw) ? raw[0] : raw?.recipe ?? raw?.data ?? raw;
+
+        if (!cancelled) {
+          if (item && item.id) {
+            setFetchedRecipe(normalizeRecipe(item));
+          } else {
+            setNotFound(true);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch recipe:', err);
+        if (!cancelled) setNotFound(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchSingleRecipe();
+    return () => { cancelled = true; };
+  }, [id, cachedRecipe]);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') navigate('/recipes');
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
+  // --- All hooks are above this line; safe to return early now ---
+
+  const data = cachedRecipe || fetchedRecipe;
+
+  if (!data && loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-500">
+        Loading recipe...
+      </div>
+    );
   }
 
-  // if (!data) return <Navigate to="/recipes" replace/>
-  if(!data) return <NotFound/>
+  if (notFound || !data) return <NotFound />;
+
+  const isFavorited = favorites.includes(data.id);
+
+  function handleFavoriteClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleFavorite(data.id);
+  }
 
 
 
