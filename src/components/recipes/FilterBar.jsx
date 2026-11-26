@@ -120,7 +120,8 @@ function Dropdown({ label, options, selected, onSelect }) {
                                     backgroundColor: isSelected ? '#f0fdf4' : undefined,
                                 }}
                             >
-                                {option}
+                                {option.replace(/[\[\]"*]/g, '')
+                                .trim()}
                             </li>
                         )
                     })}
@@ -144,7 +145,7 @@ function FilterBar() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
 
                 {/* category*/}
-                <Dropdown label="Category Filter" options={['All', 'Breakfast', 'Main Dishes', 'Dessert', 'Snack']} selected={selectedCategory} onSelect={handleCategoryChange}/>
+                <Dropdown label="Category Filter" options={['All', 'Breakfast', 'Main Dishes', 'Dessert', 'Snack', "Mine"]} selected={selectedCategory} onSelect={handleCategoryChange}/>
 
                 {/* ingredient*/}
                 <Dropdown label="Ingredient Filter" options={ingredients} selected={selectedIngredient} onSelect={setSelectedIngredient}/>

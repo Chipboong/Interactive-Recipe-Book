@@ -148,6 +148,26 @@ export function RecipeProvider({ children }) {
         setSelectedCategory(category)
         setSelectedIngredient(null)
     }
+    async function deleteRecipe(id) {
+      const response = await fetch(
+        `http://localhost:3000/api/v1/recipes/${id}`,
+        {
+          method: 'DELETE',
+          credentials: 'include',
+        }
+      );
+    
+      const result = await response.json();
+    
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete recipe');
+      }
+    
+      // Refresh your recipe list.
+      await fetchRecipes();
+    
+      return result;
+    }
 
     const value = {
         // data
@@ -172,6 +192,7 @@ export function RecipeProvider({ children }) {
 
         // recipe actions
         addRecipe,
+        deleteRecipe,
         refreshRecipes: fetchRecipes,
         toggleFavorite,
     }
