@@ -23,7 +23,7 @@ export default function RecipeDetail() {
   const navigate = useNavigate();
 
   const isFavorited = favorites.includes(id);
-  const data = recipes.find((recipe) => recipe.id === id);
+  const data = recipes.find((recipe) => recipe.id === Number(id));
 
   useEffect(() => {
     function handleKeyDown(e) { if (e.key === 'Escape') navigate('/recipes') }
