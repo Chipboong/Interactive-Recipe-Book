@@ -32,6 +32,8 @@ const router = createHashRouter([
                 path: "recipes/:id",
                 Component: RecipeDetail,
             },
+            
+            
             {
                 path: "/login",
                 Component: Login,
@@ -47,6 +49,10 @@ const router = createHashRouter([
                         path: "add-recipe",
                         Component: AddRecipe,
                     },
+                    {
+                        path: "update-recipe/:id",
+                        Component: AddRecipe
+                    }
                 ]
             },
             {
